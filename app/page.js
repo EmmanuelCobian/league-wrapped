@@ -8,6 +8,7 @@ import TeamPlayer from './components/wrapped/TeamPlayer.js'
 import RoleStats from './components/wrapped/RoleStats.js'
 import TimePreference from './components/wrapped/TimePreference.js'
 import ErrorScreen from './components/wrapped/ErrorScreen.js'
+import SummaryScreen from './components/wrapped/SummaryScreen.js';
 
 
 export default function Home() {
@@ -43,6 +44,15 @@ export default function Home() {
     }
   };
 
+  function onNavigate(direction) {
+    if (direction == 'prev') {
+      setCurrScreen(currScreen-1)
+    } 
+    else {
+      setCurrScreen(currScreen+1) 
+    }
+  }
+
   function handleReset() {
     setErrorMessage('')
     setCurrScreen(0)
@@ -56,15 +66,15 @@ export default function Home() {
   if (state == 'input') return <LoginScreen fetchData={fetchData} />
   if (state == 'loading') return <LoadingScreen />
   if (state == 'error') return <ErrorScreen errorMessage={errorMessage} handleReset={handleReset} />
-  
+
   let screens = [
     <OverallStats onNavigate={onNavigate} data={wrappedData} />,
     <MechanicSkills onNavigate={onNavigate} data={wrappedData} />,
     <TeamPlayer onNavigate={onNavigate} data={wrappedData} />,
     <RoleStats onNavigate={onNavigate} data={wrappedData} />,
-    <TimePreference onNavigate={onNavigate} data={wrappedData} />
-    // <SummaryScreen data={wrappedData}/>
+    <TimePreference onNavigate={onNavigate} data={wrappedData} />,
+    <SummaryScreen onNavigate={onNavigate} data={wrappedData}/>
   ]
 
-  return screens[0]
+  return screens[currScreen]
 }

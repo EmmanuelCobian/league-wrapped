@@ -32,13 +32,7 @@ import { useState } from 'react';
 export default function RoleStats({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
   
-  const stats = {
-    most_played_champ: "Sion",
-    solo_kills: 99999,
-    kda: 90.0,
-    champ_skill: champSkill(9),
-    personality_trait: personalityType(0)
-  };
+  const stats = data.roleStats
 
   function champSkill(rating) {
     if (rating <= 3) {
@@ -69,9 +63,9 @@ export default function RoleStats({ onNavigate, data }) {
     }, 1000);
 
     // Auto-navigate after 10 seconds
-    const timeout = setTimeout(() => {
-      onNavigate('team_player'); // Change to whatever page you want
-    }, 15000);
+    // const timeout = setTimeout(() => {
+    //   onNavigate('team_player'); // Change to whatever page you want
+    // }, 15000);
 
     return () => {
       clearInterval(interval);
@@ -102,7 +96,7 @@ export default function RoleStats({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Most Played Champ</span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.most_played_champ}</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.topChamp}</span>
               </div>
             </div>
 
@@ -114,7 +108,7 @@ export default function RoleStats({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Solo Kills</span>
-                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.solo_kills}</span>
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.soloKills}</span>
               </div>
             </div>
 
@@ -126,7 +120,7 @@ export default function RoleStats({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">KDA</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.kda}</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.avgKDA}</span>
               </div>
             </div>
 
@@ -138,7 +132,10 @@ export default function RoleStats({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Champ Skill</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.champ_skill}</span>
+                {/**
+                 * laningGames show whether they play norms or not.
+                 * laneWins show total of lane wins */ }
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.laneWins}</span> 
               </div>
             </div>
 
@@ -151,23 +148,36 @@ export default function RoleStats({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Personality Trait</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.personality_trait}</span>
+                {/* TODO: create images/support for personalities */}
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.scores}</span> 
               </div>
             </div>
           </div>
         </div>
-        <div 
-          className={`flex justify-end w-full transition-all duration-700 ${
-            visibleStats >= 13 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
-          <button
-            onClick={() => onNavigate('time_pref')}
-            className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+        
+        <div
+            className={`flex justify-between w-full transition-all duration-700 ${
+              visibleStats >= 11
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
+            }`}
           >
-            Next →
-          </button>
-        </div>
+            {/* Previous Button */}
+            <button
+              onClick={() => onNavigate('prev')}
+              className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            >
+              ← Previous
+            </button>
+
+            {/* Next Button */}
+            <button
+              onClick={() => onNavigate('next')}
+              className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            >
+              Next →
+            </button>
+          </div>
       </main>
     </div>
   );

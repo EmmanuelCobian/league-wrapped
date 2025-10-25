@@ -9,27 +9,20 @@
  */
 
 /**
- * Micro stats that are interesting:
- *  - objs helped w/
- *  - tower taken
- *  - cs score
- *  - skill shots hit
- *  - dodged
+ * bestRole
+ * bestRoleWinrate
+ * champsPlayed
+ * minutesPlayed
+ * topChamp
+ * topChamps
  */
 
 "use client"
 import { useState } from 'react';
 
-export default function MechanicSkills({ onNavigate, data }) {
+export default function SummaryScreen({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
-  
-  const stats = {
-    objs_helped: 0,
-    towers_taken: 0,
-    cs_score: 0,
-    skill_shots_hit: 0,
-    dodged: 0
-  };
+  const stats = data.summary
 
   useState(() => {
     // Fade in animations
@@ -58,67 +51,95 @@ export default function MechanicSkills({ onNavigate, data }) {
             </h1>
 
           <div className="w-full max-w-5xl space-y-6">
-            {/* Objective Participation */}
+            {/* Best Role */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Objective Participation</span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.objs_helped}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Best Role</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.bestRole}</span>
               </div>
             </div>
 
-            {/* Towers Taken */}
+            {/* Best Role Winrate */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Towers Taken</span>
-                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.towers_taken}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Best Role Winrate</span>
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.bestRoleWinrate}</span>
               </div>
             </div>
 
-            {/* CS Score */}
+            {/* Champions Played */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 7  ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">CS Score</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.cs_score}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Number of Champions Played</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.champsPlayed}</span>
               </div>
             </div>
 
-            {/* Skill Shot Accuracy */}
+            {/* Minutes Played */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Skill Shot Accuracy</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.skill_shots_hit}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Minutes Played</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.minutesPlayed}</span>
               </div>
             </div>
 
-            {/* Abilities Dodged */}
+            {/* Top Champ */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 11 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Abilities Dodged</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.dodged}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Top Champ</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.topChamp}</span>
+              </div>
+            </div>
+
+            {/* Top Champs */}
+            <div 
+              className={`transition-all duration-700 ${
+                visibleStats >= 11 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+              }`}
+            >
+              <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
+                <span className="text-lg font-medium text-black dark:text-white">Top Champ</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.topChamps}</span>
               </div>
             </div>
           </div>
         </div>
+
+        <div
+            className={`flex justify-between w-full transition-all duration-700 ${
+              visibleStats >= 11
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
+            }`}
+          >
+            {/* Previous Button */}
+            <button
+              onClick={() => onNavigate('prev')}
+              className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            >
+              ← Previous
+            </button>
+          </div>
       </main>
     </div>
   );

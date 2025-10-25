@@ -23,13 +23,14 @@ import { useState } from 'react';
 export default function TimePreference({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
   
-  const stats = {
-    objs_helped: 0,
-    towers_taken: 0,
-    cs_score: 0,
-    skill_shots_hit: 0,
-    dodged: 0
-  };
+  const stats = data.timePref
+  /**
+   * blockBreakdown, show time of day
+   * playsAllDay, conditional to see if they stick to one time or not
+   * timeSlot, title for when they play
+   * winrate, winrate during timeSlot
+   */
+
 
   useState(() => {
     // Fade in animations
@@ -38,9 +39,9 @@ export default function TimePreference({ onNavigate, data }) {
     }, 1000);
 
     // Auto-navigate after 10 seconds
-    const timeout = setTimeout(() => {
-      onNavigate('team_player'); // Change to whatever page you want
-    }, 15000);
+    // const timeout = setTimeout(() => {
+    //   onNavigate('team_player'); // Change to whatever page you want
+    // }, 15000);
 
     return () => {
       clearInterval(interval);
@@ -52,7 +53,7 @@ export default function TimePreference({ onNavigate, data }) {
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-7xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black">
         <div className="text-4xl font-bold text-black dark:text-white">
-          Let's show how skillful you are.
+          Time break down
         </div>
 
         <div className="flex flex-col items-center gap-8 text-center w-full">
@@ -124,18 +125,31 @@ export default function TimePreference({ onNavigate, data }) {
             </div>
           </div>
         </div>
-        <div 
-          className={`flex justify-end w-full transition-all duration-700 ${
-            visibleStats >= 13 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-          }`}
-        >
-          <button
-            onClick={() => onNavigate('summary')}
-            className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+        
+        <div
+            className={`flex justify-between w-full transition-all duration-700 ${
+              visibleStats >= 11
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-4'
+            }`}
           >
-            Next →
-          </button>
-        </div>
+            {/* Previous Button */}
+            <button
+              onClick={() => onNavigate('prev')}
+              className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            >
+              ← Previous
+            </button>
+
+            {/* Next Button */}
+            <button
+              onClick={() => onNavigate('next')}
+              className="flex h-12 items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
+            >
+              Next →
+            </button>
+          </div>
+
       </main>
     </div>
   );
