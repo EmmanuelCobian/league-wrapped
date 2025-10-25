@@ -49,10 +49,18 @@ export default function RoleStats({ onNavigate, data }) {
     }
     };
   
-  function personalityType(rating) {
+  function personalityType() {
         // TODO: have these reference most_played_champ
         // most_played_champ, solo_kills, kda, champ_skill
-        return 0
+        if (data.aggression > 50 && stats.teamwork > 30 && consistency > 40){
+          return "Noxus"
+        }
+        else if (data.aggression < 50 && stats.teamwork > 40 && consistency >= 50)
+          return "Piltover"
+        else if (data.aggression > 50 && stats.teamwork < 30 && consistency > 40)
+          return "Zaun"
+        else
+          return "Ionia"
     };
 
 
@@ -149,7 +157,7 @@ export default function RoleStats({ onNavigate, data }) {
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Personality Trait</span>
                 {/* TODO: create images/support for personalities */}
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.scores}</span> 
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{personalityType(stats.scores[0], stats.scores[1], stats.scores[2])}</span> 
               </div>
             </div>
           </div>

@@ -60,7 +60,7 @@ export default function TimePreference({ onNavigate, data }) {
             <h1 className={`text-3xl font-semibold text-black dark:text-white mb-8 transition-all duration-700 ${
                 visibleStats >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}>
-                How skilled are you?
+                Hi
             </h1>
 
           <div className="w-full max-w-5xl space-y-6">
@@ -71,24 +71,24 @@ export default function TimePreference({ onNavigate, data }) {
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Objective Participation</span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.objs_helped}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Do you play through-out the day?</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.playsAllDay ? "GET A LIFE!!": "No? Good."}</span>
               </div>
             </div>
 
-            {/* Towers Taken */}
+            {/* Time of Day */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Towers Taken</span>
-                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.towers_taken}</span>
+                <span className="text-lg font-medium text-black dark:text-white">What does the time of day you play say about you?</span>
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.timeSlot}</span>
               </div>
             </div>
 
-            {/* CS Score */}
+            {/* Winrate at that time? */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 7  ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
@@ -96,31 +96,7 @@ export default function TimePreference({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">CS Score</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.cs_score}</span>
-              </div>
-            </div>
-
-            {/* Skill Shot Accuracy */}
-            <div 
-              className={`transition-all duration-700 ${
-                visibleStats >= 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}
-            >
-              <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Skill Shot Accuracy</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.skill_shots_hit}</span>
-              </div>
-            </div>
-
-            {/* Abilities Dodged */}
-            <div 
-              className={`transition-all duration-700 ${
-                visibleStats >= 11 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
-              }`}
-            >
-              <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Abilities Dodged</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.dodged}</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.winrate}</span>
               </div>
             </div>
           </div>

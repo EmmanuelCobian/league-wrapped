@@ -100,7 +100,7 @@ export default function OverallStats({ onNavigate, data}) {
             >
               <div className="flex flex-col gap-3">
                 <span className="text-lg font-medium text-black dark:text-white text-center mb-2">Champions Played</span>
-                <div className="grid grid-cols-5 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {overall_stats.topChamps.map((champ, index) => (
                     <div 
                       key={index}

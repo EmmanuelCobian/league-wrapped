@@ -52,7 +52,6 @@ export default function Home() {
     else {
       setCurrScreen(currScreen+1) 
     }
-    setState(state)
   }
 
   function handleReset() {
@@ -68,7 +67,7 @@ export default function Home() {
   let screens = [
     <OverallStats onNavigate={onNavigate} data={wrappedData} />,
     <MechanicSkills onNavigate={onNavigate} data={wrappedData} />,
-    <TeamPlayer onNavigate={onNavigate} data={wrappedData} />,
+    // <TeamPlayer onNavigate={onNavigate} data={wrappedData} />,
     <RoleStats onNavigate={onNavigate} data={wrappedData} />,
     <TimePreference onNavigate={onNavigate} data={wrappedData} />,
     <SummaryScreen onNavigate={onNavigate} data={wrappedData}/>

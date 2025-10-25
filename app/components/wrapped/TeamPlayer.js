@@ -9,14 +9,7 @@ import { useState } from 'react';
 
 export default function TeamPlayer({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
-  
-  const stats = {
-    objs_helped: 0,
-    towers_taken: 0,
-    cs_score: 0,
-    skill_shots_hit: 0,
-    dodged: 0
-  };
+  const stats = data.teamPlayer
 
   useState(() => {
     // Fade in animations
@@ -58,7 +51,7 @@ export default function TeamPlayer({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Objective Participation</span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.objs_helped}</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.avg}</span>
               </div>
             </div>
 
