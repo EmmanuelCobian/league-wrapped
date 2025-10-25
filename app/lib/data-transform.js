@@ -2,7 +2,7 @@ import { roundToDecimal, normalizeToPercentile } from "./utils";
 
 /**
  * Compiles all of the data into an object for the front end. Each key in the object represents a different screen in the front end
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid of a player in this match
  * @returns object with wrapped data
@@ -30,33 +30,33 @@ export function generateWrappedData(matches, playerPuuid) {
 
 /**
  * Finds the time of day where a player plays most/the best. Returns an object with info on their most played slot, and or, best slot with best winrate
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid of a player in this match
  * @returns object with player time preference
  */
 function calculateTimePreference(matches, playerPuuid) {
   const timeBlocks = {
-    'Early Morning': { start: 5, end: 9 },    // 5 AM - 9 AM
-    'Morning': { start: 9, end: 12 },         // 9 AM - 12 PM
-    'Afternoon': { start: 12, end: 17 },      // 12 PM - 5 PM
-    'Evening': { start: 17, end: 22 },        // 5 PM - 10 PM
-    'Late Night': { start: 22, end: 24 },     // 10 PM - 12 AM
-    'Night Owl': { start: 0, end: 5 }         // 12 AM - 5 AM
+    "Early Morning": { start: 5, end: 9 }, // 5 AM - 9 AM
+    Morning: { start: 9, end: 12 }, // 9 AM - 12 PM
+    Afternoon: { start: 12, end: 17 }, // 12 PM - 5 PM
+    Evening: { start: 17, end: 22 }, // 5 PM - 10 PM
+    "Late Night": { start: 22, end: 24 }, // 10 PM - 12 AM
+    "Night Owl": { start: 0, end: 5 }, // 12 AM - 5 AM
   };
-  
+
   const blockStats = {};
-  Object.keys(timeBlocks).forEach(block => {
+  Object.keys(timeBlocks).forEach((block) => {
     blockStats[block] = { games: 0, wins: 0 };
   });
-  
-  matches.forEach(match => {
-    const player = match.info.participants.find(p => p.puuid === playerPuuid);
+
+  matches.forEach((match) => {
+    const player = match.info.participants.find((p) => p.puuid === playerPuuid);
     if (!player) return;
-    
+
     const date = new Date(match.info.gameStartTimestamp);
     const hour = date.getHours();
-    
+
     for (const [blockName, block] of Object.entries(timeBlocks)) {
       if (block.start < block.end) {
         // Normal range (e.g., 9-12)
@@ -75,60 +75,65 @@ function calculateTimePreference(matches, playerPuuid) {
       }
     }
   });
-  
-  const blockData = Object.entries(blockStats).map(([name, stats]) => ({
-    name,
-    games: stats.games,
-    wins: stats.wins,
-    winrate: stats.games > 0 ? roundToDecimal((stats.wins / stats.games) * 100, 1) : 0
-  })).filter(block => block.games > 0);
-  
-  const blocksPlayed = blockData.filter(block => block.games >= 3).length;
+
+  const blockData = Object.entries(blockStats)
+    .map(([name, stats]) => ({
+      name,
+      games: stats.games,
+      wins: stats.wins,
+      winrate:
+        stats.games > 0
+          ? roundToDecimal((stats.wins / stats.games) * 100, 1)
+          : 0,
+    }))
+    .filter((block) => block.games > 0);
+
+  const blocksPlayed = blockData.filter((block) => block.games >= 3).length;
   const playsAllDay = blocksPlayed >= 4;
-  
+
   let bestBlock = blockData
-    .filter(block => block.games >= 5)
+    .filter((block) => block.games >= 5)
     .sort((a, b) => {
       if (b.winrate !== a.winrate) return b.winrate - a.winrate;
       return b.games - a.games;
     })[0];
-  
+
   if (!bestBlock) {
     bestBlock = blockData.sort((a, b) => b.games - a.games)[0];
   }
-  
+
   if (blocksPlayed === 1) {
     const onlyBlock = blockData[0];
     return {
       playsAllDay: false,
       timeSlot: onlyBlock.name,
       winrate: onlyBlock.winrate,
-      blockBreakdown: blockData
+      blockBreakdown: blockData,
     };
   }
-  
+
   if (!playsAllDay) {
     const dominantBlock = blockData.sort((a, b) => b.games - a.games)[0];
-    
+
     return {
       playsAllDay: false,
       timeSlot: dominantBlock.name,
       winrate: dominantBlock.winrate,
-      blockBreakdown: blockData
+      blockBreakdown: blockData,
     };
   }
-  
+
   return {
     playsAllDay: true,
     timeSlot: bestBlock.name,
     winrate: bestBlock.winrate,
-    blockBreakdown: blockData.sort((a, b) => b.winrate - a.winrate)
+    blockBreakdown: blockData.sort((a, b) => b.winrate - a.winrate),
   };
 }
 
 /**
  * Generates 1st screen overall stats for a player
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid of a player in this match
  * @returns object with a player's overall stats
@@ -171,7 +176,7 @@ function calculateOverallStats(matches, playerPuuid) {
 
 /**
  * Generates a player's mechanical stats
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid of a player in this match
  * @returns object with a player's stats that represent their mechanical skill
@@ -216,7 +221,7 @@ function calculateMechanicalSkill(matches, playerPuuid) {
 
 /**
  * Generates a player's role stats for their most played champ and role
- * 
+ *
  * @param {Array[Object]} matches - the list of matches
  * @param {string} playerPuuid - the unique puuid of a player in this match
  * @param {string} topChamp - the name of the player's most played champ
@@ -268,7 +273,7 @@ function calculateRoleStats(matches, playerPuuid, topChamp) {
 
 /**
  * Checks whether a match is a match on summoner's rift. No ARAM, custom games, arcade games, etc.
- * 
+ *
  * @param {Object} match - the match data
  * @returns boolean whether a match is a summoner's rift map match
  */
@@ -293,7 +298,7 @@ function isTraditionalLaningMode(match) {
 
 /**
  * Determine whether a player won their lane
- * 
+ *
  * @param {Object} player - player data for a match
  * @returns true if player won their lane, false otherwise
  */
@@ -312,7 +317,7 @@ function wonLane(player) {
 
 /**
  * Determines whether a jungle laning player won their lane
- * 
+ *
  * @param {Object} player - the player data for a match
  * @param {Object} ch - player's challenge stats for a match
  * @returns true if player won lane as jungle, false otherwise
@@ -351,7 +356,7 @@ function wonJungle(player, ch) {
 
 /**
  * Determines whether a support laning player won their lane
- * 
+ *
  * @param {Object} player - the player data for a match
  * @param {Object} ch - player's challenge stats for a match
  * @returns true if a plyer won lane as support, false otherwise
@@ -395,7 +400,7 @@ function wonSupport(player, ch) {
 
 /**
  * Determines whether a top, mid, or adc laning player won their lane
- * 
+ *
  * @param {Object} player - the player data for a match
  * @param {Object} ch - player's challenge stats for a match
  * @returns true if a player won lane as top, mid, or adc, false otherwise
@@ -451,7 +456,7 @@ function wonLane_Standard(player, ch) {
 
 /**
  * Generates summary stats for a player
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid for a player
  * @param {Array[Array[string, int]]} topChamps - list of most played champs and number of games played on that champ
@@ -512,54 +517,93 @@ function calculateSummary(matches, playerPuuid, topChamps) {
 
 /**
  * Calculates a player's aggression score
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid for a player
  * @returns float score representing aggression
  */
 function calculateAggression(matches, playerPuuid) {
-  let aggressionScore = 0;
+  let totalAgression = 0;
 
   matches.forEach((match) => {
     const player = match.info.participants.find((p) => p.puuid === playerPuuid);
 
-    if (player.kills > 10) aggressionScore += 10;
-    if (player.deaths > 7) aggressionScore += 15;
-    if (player.challenges?.soloKills > 2) aggressionScore += 20;
+    let gameScore = 0;
+    const ch = player.challenges || {};
+    const kills = player.kills || 0;
+    if (kills >= 10) gameScore += 50;
+    else if (kills >= 8) gameScore += 35;
+    else if (kills >= 6) gameScore += 20;
+    else if (kills >= 4) gameScore += 10;
+
+    const soloKills = ch.soloKills || 0;
+    if (soloKills >= 3) gameScore += 30;
+    else if (soloKills >= 2) gameScore += 20;
+    else if (soloKills >= 1) gameScore += 10;
+
+    const killsNearTurret = ch.killsNearTurret || 0;
+    if (killsNearTurret >= 3) gameScore += 20;
+    else if (killsNearTurret >= 1) gameScore += 10;
+
+    totalAgression += gameScore;
   });
 
-  return Math.min(100, aggressionScore / matches.length);
+  const averageScore = totalAgression / matches.length;
+  return normalizeToPercentile(averageScore, 10, 30, 55);
 }
 
 /**
  * Calculates a player's teamwork score
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid for a player
  * @returns float score representing teamwork
  */
 function calculateTeamwork(matches, playerPuuid) {
-  let teamworkScore = 0;
+  let totalTeamworkScore = 0;
 
   matches.forEach((match) => {
     const player = match.info.participants.find((p) => p.puuid === playerPuuid);
+    if (!player) return;
 
-    const kp = player.challenges?.killParticipation || 0;
-    if (kp > 0.65) teamworkScore += 20;
+    let gameScore = 0;
+    const ch = player.challenges || {};
 
-    const assistRatio = player.assists / (player.kills || 1);
-    if (assistRatio > 1.5) teamworkScore += 20;
+    const kp = ch.killParticipation || 0;
+    if (kp >= 0.75) gameScore += 30;
+    else if (kp >= 0.65) gameScore += 20;
+    else if (kp >= 0.55) gameScore += 10;
+    else if (kp >= 0.45) gameScore += 5;
 
-    const visionPerMin = player.challenges?.visionScorePerMinute || 0;
-    if (visionPerMin > 1.5) teamworkScore += 20;
+    const assistRatio = player.assists / Math.max(1, player.kills);
+    if (assistRatio >= 2.5) gameScore += 25;
+    else if (assistRatio >= 1.5) gameScore += 18;
+    else if (assistRatio >= 1.0) gameScore += 10;
+    else if (assistRatio >= 0.7) gameScore += 5;
+
+    const visionPerMin = ch.visionScorePerMinute || 0;
+    if (visionPerMin >= 2.0) gameScore += 25;
+    else if (visionPerMin >= 1.5) gameScore += 18;
+    else if (visionPerMin >= 1.0) gameScore += 10;
+    else if (visionPerMin >= 0.7) gameScore += 5;
+
+    const healsOnTeam = player.totalHealsOnTeammates || 0;
+    const shieldsOnTeam = player.totalDamageShieldedOnTeammates || 0;
+    const supportScore = healsOnTeam + shieldsOnTeam;
+    if (supportScore >= 3000) gameScore += 20;
+    else if (supportScore >= 1500) gameScore += 10;
+    else if (supportScore >= 500) gameScore += 5;
+
+    totalTeamworkScore += gameScore;
   });
 
-  return Math.min(100, teamworkScore / matches.length);
+  const avgScore = totalTeamworkScore / matches.length;
+  return normalizeToPercentile(avgScore, 20, 40, 65);
 }
 
 /**
  * Calculates a player's consistency score
- * 
+ *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid for a player
  * @returns float score representing consistency
@@ -567,17 +611,36 @@ function calculateTeamwork(matches, playerPuuid) {
 function calculateConsistency(matches, playerPuuid) {
   const kdas = matches.map((match) => {
     const player = match.info.participants.find((p) => p.puuid === playerPuuid);
+    if (!player) return 0;
     return (
       player.challenges?.kda ||
-      (player.kills + player.assists) / (player.deaths || 1)
+      (player.kills + player.assists) / Math.max(1, player.deaths)
     );
   });
-
+  console.log(kdas)
   const mean = kdas.reduce((a, b) => a + b, 0) / kdas.length;
   const variance =
     kdas.reduce((sum, kda) => sum + Math.pow(kda - mean, 2), 0) / kdas.length;
   const stdDev = Math.sqrt(variance);
 
-  const consistencyScore = Math.max(0, 100 - stdDev * 20);
-  return consistencyScore;
+  // Lower stdDev = more consistent = higher score
+  // Typical stdDev ranges for KDA:
+  // - Very inconsistent: stdDev > 2.5
+  // - Inconsistent: stdDev 2.0-2.5
+  // - Average: stdDev 1.5-2.0
+  // - Consistent: stdDev 1.0-1.5
+  // - Very consistent: stdDev < 1.0
+
+  // Map stdDev to score directly (inverse relationship)
+  // Low stdDev (0.5) -> High score (100)
+  // High stdDev (3.0) -> Low score (0)
+
+  if (stdDev <= 0.8) return 100; // Extremely consistent
+  if (stdDev <= 1.2) return 90; // Very consistent
+  if (stdDev <= 1.6) return 75; // Consistent
+  if (stdDev <= 2.0) return 60; // Above average
+  if (stdDev <= 2.5) return 45; // Average
+  if (stdDev <= 3.0) return 30; // Below average
+  if (stdDev <= 3.5) return 15; // Inconsistent
+  return 5; // Very inconsistent
 }
