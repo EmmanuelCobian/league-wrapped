@@ -26,11 +26,11 @@ export async function POST(request) {
     // 2. Get match history
     const matchIds = await getMatchHistory(summoner.puuid, 15);
     
-    // // 3. Fetch all match details
+    // 3. Fetch all match details
     const matchPromises = matchIds.map(id => getMatchDetails(id));
     const matches = await Promise.all(matchPromises);
     
-    // // 4. Transform data into Wrapped format
+    // 4. Transform data into Wrapped format
     const wrappedData = generateWrappedData(matches, summoner.puuid);
     
     return NextResponse.json({

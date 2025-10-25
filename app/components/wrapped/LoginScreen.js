@@ -5,17 +5,37 @@ export default function LoginScreen({ onNavigate }) {
   const [riotId, setRiotId] = useState('');
   const [tagline, setTagline] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  
-  const handleSubmit = (e) => {
+  const [error, setError] = useState('');
+  const [wrappedData, setWrappedData] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (riotId && tagline) {
-      setIsLoading(true);
-      console.log('Submitted:', { riotId, tagline });
-      // Simulate a brief delay before navigating
-      setTimeout(() => {
-        onNavigate('loading');
-        setIsLoading(false);
-      }, 500);
+      onNavigate('loading');
+      setError('');
+      
+      try {
+        const response = await fetch('/api/wrapped', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ gameName: riotId, tagLine: tagline }),
+        });
+        
+        const result = await response.json();
+        console.log(result)
+        if (!result.success) {
+          throw new Error(result.error);
+        }
+        
+        setWrappedData(result.data);
+        onNavigate('overall_stats');
+        
+      } catch (err) {
+        setError(err.message);
+        setState('error');
+      }
     }
   };
 
