@@ -175,10 +175,10 @@ export default function SummaryScreen({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">
-                  Time Played
+                  Time Wasted (LOL)
                 </span>
                 <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {stats.hoursPlayed}h ({stats.daysPlayed} days)
+                  {stats.minutesPlayed}
                 </span>
               </div>
             </div>
@@ -214,20 +214,17 @@ export default function SummaryScreen({ onNavigate, data }) {
                   Top 3 Champions
                 </span>
                 <div className="flex justify-around gap-4">
-                  {stats.top3Champs &&
-                    stats.top3Champs.map((champ, index) => (
-                      <div key={champ.name} className="text-center">
+                  {stats.topChamps &&
+                    stats.topChamps.map((champ, index) => (
+                      <div key={champ[0]} className="text-center">
                         <div className="text-2xl mb-2">
                           {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
                         </div>
                         <p className="font-bold text-black dark:text-white">
-                          {champ.name}
+                          {champ[0]}
                         </p>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                          {champ.games} games
-                        </p>
-                        <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                          {champ.winrate}% WR
+                          {champ[1]} games
                         </p>
                       </div>
                     ))}
