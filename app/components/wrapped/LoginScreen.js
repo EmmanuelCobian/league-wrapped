@@ -56,7 +56,6 @@ export default function LoginScreen({ onNavigate }) {
                   type="text"
                   value={riotId}
                   onChange={(e) => setRiotId(e.target.value)}
-                  maxLength={5}
                   className="w-full h-12 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                   placeholder="Riot ID"
                 />
