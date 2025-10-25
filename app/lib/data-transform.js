@@ -617,7 +617,7 @@ function calculateConsistency(matches, playerPuuid) {
       (player.kills + player.assists) / Math.max(1, player.deaths)
     );
   });
-  console.log(kdas)
+
   const mean = kdas.reduce((a, b) => a + b, 0) / kdas.length;
   const variance =
     kdas.reduce((sum, kda) => sum + Math.pow(kda - mean, 2), 0) / kdas.length;
