@@ -43,7 +43,6 @@ export async function POST(request) {
     
   } catch (error) {
     console.error('Wrapped API error:', error);
-    console.log('Wrapped API error:', error);
     
     if (error.message.includes('404')) {
       return NextResponse.json(

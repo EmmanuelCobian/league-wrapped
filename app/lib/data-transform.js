@@ -1,7 +1,15 @@
+import { roundToDecimal, normalizeToPercentile } from "./utils";
+
+/**
+ * Compiles all of the data into an object for the front end. Each key in the object represents a different screen in the front end
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid of a player in this match
+ * @returns object with wrapped data
+ */
 export function generateWrappedData(matches, playerPuuid) {
   const overall = calculateOverallStats(matches, playerPuuid);
   const mechanical = calculateMechanicalSkill(matches, playerPuuid);
-  //   const teamPlayer = calculateTeamPlayerSkill(matches, playerPuuid);
   const timePref = calculateTimePreference(matches, playerPuuid);
   const topChamps = overall.topChamps || [];
   const roleStats = calculateRoleStats(
@@ -14,13 +22,19 @@ export function generateWrappedData(matches, playerPuuid) {
   return {
     overall,
     mechanical,
-    // teamPlayer,
     timePref,
     roleStats,
     summary,
   };
 }
 
+/**
+ * Finds the time of day where a player plays most/the best. Returns an object with info on their most played slot, and or, best slot with best winrate
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid of a player in this match
+ * @returns object with player time preference
+ */
 function calculateTimePreference(matches, playerPuuid) {
   const timeBlocks = {
     'Early Morning': { start: 5, end: 9 },    // 5 AM - 9 AM
@@ -62,34 +76,27 @@ function calculateTimePreference(matches, playerPuuid) {
     }
   });
   
-  // Calculate winrates for each block
   const blockData = Object.entries(blockStats).map(([name, stats]) => ({
     name,
     games: stats.games,
     wins: stats.wins,
     winrate: stats.games > 0 ? roundToDecimal((stats.wins / stats.games) * 100, 1) : 0
-  })).filter(block => block.games > 0); // Only blocks with games
+  })).filter(block => block.games > 0);
   
-  // Determine if player plays throughout the day
-  const blocksPlayed = blockData.filter(block => block.games >= 3).length; // Min 3 games per block
-  const playsAllDay = blocksPlayed >= 4; // Plays in 4+ different time blocks
+  const blocksPlayed = blockData.filter(block => block.games >= 3).length;
+  const playsAllDay = blocksPlayed >= 4;
   
-  // Find best time block (highest winrate with min 5 games)
   let bestBlock = blockData
     .filter(block => block.games >= 5)
     .sort((a, b) => {
-      // Primary sort: winrate
       if (b.winrate !== a.winrate) return b.winrate - a.winrate;
-      // Secondary sort: games played (if winrates tied)
       return b.games - a.games;
     })[0];
   
-  // If no block has 5+ games, find block with most games
   if (!bestBlock) {
     bestBlock = blockData.sort((a, b) => b.games - a.games)[0];
   }
   
-  // If player only plays in one time block
   if (blocksPlayed === 1) {
     const onlyBlock = blockData[0];
     return {
@@ -100,12 +107,8 @@ function calculateTimePreference(matches, playerPuuid) {
     };
   }
   
-  // Case 1: Player has a dominant time block (70%+ of games in 1-2 blocks)
   if (!playsAllDay) {
     const dominantBlock = blockData.sort((a, b) => b.games - a.games)[0];
-    const gamesInDominant = dominantBlock.games;
-    const totalGames = matches.length;
-    const dominancePercent = (gamesInDominant / totalGames) * 100;
     
     return {
       playsAllDay: false,
@@ -115,7 +118,6 @@ function calculateTimePreference(matches, playerPuuid) {
     };
   }
   
-  // Case 2: Player plays throughout the day
   return {
     playsAllDay: true,
     timeSlot: bestBlock.name,
@@ -124,6 +126,13 @@ function calculateTimePreference(matches, playerPuuid) {
   };
 }
 
+/**
+ * Generates 1st screen overall stats for a player
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid of a player in this match
+ * @returns object with a player's overall stats
+ */
 function calculateOverallStats(matches, playerPuuid) {
   let wins = 0;
   let losses = 0;
@@ -160,6 +169,13 @@ function calculateOverallStats(matches, playerPuuid) {
   };
 }
 
+/**
+ * Generates a player's mechanical stats
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid of a player in this match
+ * @returns object with a player's stats that represent their mechanical skill
+ */
 function calculateMechanicalSkill(matches, playerPuuid) {
   let objectivesHelpedWith = 0;
   let towersTaken = 0;
@@ -198,6 +214,14 @@ function calculateMechanicalSkill(matches, playerPuuid) {
   };
 }
 
+/**
+ * Generates a player's role stats for their most played champ and role
+ * 
+ * @param {Array[Object]} matches - the list of matches
+ * @param {string} playerPuuid - the unique puuid of a player in this match
+ * @param {string} topChamp - the name of the player's most played champ
+ * @returns object with a player's stats that highlights their champ and role
+ */
 function calculateRoleStats(matches, playerPuuid, topChamp) {
   let soloKills = 0;
   let kda = 0;
@@ -242,6 +266,12 @@ function calculateRoleStats(matches, playerPuuid, topChamp) {
   };
 }
 
+/**
+ * Checks whether a match is a match on summoner's rift. No ARAM, custom games, arcade games, etc.
+ * 
+ * @param {Object} match - the match data
+ * @returns boolean whether a match is a summoner's rift map match
+ */
 function isTraditionalLaningMode(match) {
   const gameMode = match.info.gameMode;
   const queueId = match.info.queueId;
@@ -261,6 +291,12 @@ function isTraditionalLaningMode(match) {
   return traditionalQueues.includes(queueId);
 }
 
+/**
+ * Determine whether a player won their lane
+ * 
+ * @param {Object} player - player data for a match
+ * @returns true if player won their lane, false otherwise
+ */
 function wonLane(player) {
   const ch = player.challenges || {};
   const role = player.teamPosition;
@@ -274,6 +310,13 @@ function wonLane(player) {
   }
 }
 
+/**
+ * Determines whether a jungle laning player won their lane
+ * 
+ * @param {Object} player - the player data for a match
+ * @param {Object} ch - player's challenge stats for a match
+ * @returns true if player won lane as jungle, false otherwise
+ */
 function wonJungle(player, ch) {
   let score = 0;
   let maxScore = 4;
@@ -306,6 +349,13 @@ function wonJungle(player, ch) {
   return score / maxScore >= 0.5;
 }
 
+/**
+ * Determines whether a support laning player won their lane
+ * 
+ * @param {Object} player - the player data for a match
+ * @param {Object} ch - player's challenge stats for a match
+ * @returns true if a plyer won lane as support, false otherwise
+ */
 function wonSupport(player, ch) {
   let score = 0;
   let maxScore = 4;
@@ -343,6 +393,13 @@ function wonSupport(player, ch) {
   return score / maxScore >= 0.5;
 }
 
+/**
+ * Determines whether a top, mid, or adc laning player won their lane
+ * 
+ * @param {Object} player - the player data for a match
+ * @param {Object} ch - player's challenge stats for a match
+ * @returns true if a player won lane as top, mid, or adc, false otherwise
+ */
 function wonLane_Standard(player, ch) {
   let score = 0;
   let maxScore = 4;
@@ -392,6 +449,14 @@ function wonLane_Standard(player, ch) {
   return score / maxScore >= 0.5;
 }
 
+/**
+ * Generates summary stats for a player
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid for a player
+ * @param {Array[Array[string, int]]} topChamps - list of most played champs and number of games played on that champ
+ * @returns object with summary stats for the summary screen
+ */
 function calculateSummary(matches, playerPuuid, topChamps) {
   let minutesPlayed = 0;
   let rolesPlayed = {};
@@ -445,21 +510,13 @@ function calculateSummary(matches, playerPuuid, topChamps) {
   };
 }
 
-function calculatePlaystyle(matches, playerPuuid) {
-  const aggression = calculateAggression(matches, playerPuuid);
-  const teamwork = calculateTeamwork(matches, playerPuuid);
-  const consistency = calculateConsistency(matches, playerPuuid);
-
-  const scores = { aggression, teamwork, consistency };
-  const category = determinePlaystyleCategory(scores);
-
-  return {
-    scores,
-    category: category.name,
-    description: category.desc,
-  };
-}
-
+/**
+ * Calculates a player's aggression score
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid for a player
+ * @returns float score representing aggression
+ */
 function calculateAggression(matches, playerPuuid) {
   let aggressionScore = 0;
 
@@ -474,6 +531,13 @@ function calculateAggression(matches, playerPuuid) {
   return Math.min(100, aggressionScore / matches.length);
 }
 
+/**
+ * Calculates a player's teamwork score
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid for a player
+ * @returns float score representing teamwork
+ */
 function calculateTeamwork(matches, playerPuuid) {
   let teamworkScore = 0;
 
@@ -493,6 +557,13 @@ function calculateTeamwork(matches, playerPuuid) {
   return Math.min(100, teamworkScore / matches.length);
 }
 
+/**
+ * Calculates a player's consistency score
+ * 
+ * @param {Array[Object]} matches - list of matches
+ * @param {string} playerPuuid - the unique puuid for a player
+ * @returns float score representing consistency
+ */
 function calculateConsistency(matches, playerPuuid) {
   const kdas = matches.map((match) => {
     const player = match.info.participants.find((p) => p.puuid === playerPuuid);
@@ -509,43 +580,4 @@ function calculateConsistency(matches, playerPuuid) {
 
   const consistencyScore = Math.max(0, 100 - stdDev * 20);
   return consistencyScore;
-}
-
-function analyzeStreaks(matches, playerPuuid) {
-  const sorted = [...matches].sort(
-    (a, b) => a.info.gameStartTimestamp - b.info.gameStartTimestamp
-  );
-
-  let currentWinStreak = 0;
-  let currentLossStreak = 0;
-  let longestWinStreak = 0;
-  let longestLossStreak = 0;
-
-  sorted.forEach((match) => {
-    const player = match.info.participants.find((p) => p.puuid === playerPuuid);
-
-    if (player.win) {
-      currentWinStreak++;
-      currentLossStreak = 0;
-      if (currentWinStreak > longestWinStreak) {
-        longestWinStreak = currentWinStreak;
-      }
-    } else {
-      currentLossStreak++;
-      currentWinStreak = 0;
-      if (currentLossStreak > longestLossStreak) {
-        longestLossStreak = currentLossStreak;
-      }
-    }
-  });
-
-  return {
-    longestWinStreak,
-    longestLossStreak,
-  };
-}
-
-function roundToDecimal(num, places) {
-  const factor = Math.pow(10, places);
-  return Math.round(num * factor) / factor;
 }
