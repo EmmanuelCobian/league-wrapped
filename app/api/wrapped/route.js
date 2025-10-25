@@ -37,8 +37,7 @@ export async function POST(request) {
       success: true,
       data: {
         gameName,
-        tagLine,
-        ...wrappedData
+        ...wrappedData,
       }
     });
     
