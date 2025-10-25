@@ -1,16 +1,21 @@
 "use client"
-
 import { useState } from 'react';
 
-export default function LoginScreen() {
+export default function LoginScreen({ onNavigate }) {
   const [riotId, setRiotId] = useState('');
   const [tagline, setTagline] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false);
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     if (riotId && tagline) {
+      setIsLoading(true);
       console.log('Submitted:', { riotId, tagline });
-      // Add your submission logic here
+      // Simulate a brief delay before navigating
+      setTimeout(() => {
+        onNavigate('loading');
+        setIsLoading(false);
+      }, 500);
     }
   };
 
@@ -20,12 +25,10 @@ export default function LoginScreen() {
         <div className="text-4xl font-bold text-black dark:text-white">
           RIOT WRAPPED
         </div>
-        
         <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left w-full">
           <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
             Enter Riot ID and Tag to begin your wrapped
           </h1>
-          
           <form onSubmit={handleSubmit} className="w-full max-w-md">
             <div className="flex gap-2">
               <div className="relative flex-1">
@@ -33,11 +36,11 @@ export default function LoginScreen() {
                   type="text"
                   value={riotId}
                   onChange={(e) => setRiotId(e.target.value)}
+                  maxLength={5}
                   className="w-full h-12 px-4 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-black dark:text-white focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-white"
                   placeholder="Riot ID"
                 />
               </div>
-              
               <div className="relative w-32">
                 <input
                   type="text"
@@ -49,23 +52,14 @@ export default function LoginScreen() {
                 />
               </div>
             </div>
-            
             <button
               type="submit"
-              className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
+              disabled={isLoading}
+              className="mt-4 flex h-12 w-full items-center justify-center rounded-full bg-black text-white transition-colors hover:bg-zinc-800 dark:bg-white dark:text-black dark:hover:bg-zinc-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Start Wrapped
+              {isLoading ? 'Loading...' : 'Start Wrapped'}
             </button>
           </form>
-        </div>
-
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="#"
-          >
-            Learn More
-          </a>
         </div>
       </main>
     </div>
