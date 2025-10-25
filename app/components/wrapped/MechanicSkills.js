@@ -10,7 +10,7 @@
 "use client"
 import { useState } from 'react';
 
-export default function MechanicSkills({ onNavigate }) {
+export default function MechanicSkills({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
   
   const stats = {

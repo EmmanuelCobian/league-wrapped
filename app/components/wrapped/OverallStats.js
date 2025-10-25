@@ -9,7 +9,7 @@ stats to use:
 "use client"
 import { useState } from 'react';
 
-export default function OverallStats({ onNavigate }) {
+export default function OverallStats({ onNavigate, data}) {
   const [visibleStats, setVisibleStats] = useState(0);
   
   // Sample data - replace with actual data

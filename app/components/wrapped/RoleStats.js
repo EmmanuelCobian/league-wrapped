@@ -29,7 +29,7 @@ stats about the individual player on champ:
 "use client"
 import { useState } from 'react';
 
-export default function RoleStats({ onNavigate }) {
+export default function RoleStats({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
   
   const stats = {
@@ -94,63 +94,64 @@ export default function RoleStats({ onNavigate }) {
             </h1>
 
           <div className="w-full max-w-5xl space-y-6">
-            {/* Most Champion Played */}
+            {/* Most Played Champion */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 3 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Objective Participation</span>
-                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.objs_helped}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Most Played Champ</span>
+                <span className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.most_played_champ}</span>
               </div>
             </div>
 
-            {/* Towers Taken */}
+            {/* Solo Kills */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Towers Taken</span>
-                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.towers_taken}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Solo Kills</span>
+                <span className="text-2xl font-bold text-red-600 dark:text-red-400">{stats.solo_kills}</span>
               </div>
             </div>
 
-            {/* CS Score */}
+            {/* KDA */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 7  ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">CS Score</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.cs_score}</span>
+                <span className="text-lg font-medium text-black dark:text-white">KDA</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.kda}</span>
               </div>
             </div>
 
-            {/* Skill Shot Accuracy */}
+            {/* Champ Skill */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 9 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Skill Shot Accuracy</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.skill_shots_hit}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Champ Skill</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.champ_skill}</span>
               </div>
             </div>
 
-            {/* Abilities Dodged */}
+              {/* Add decider to put them in a region of runeterra (ionia/noxus/zaun) */}
+            {/* Personality Trait */}
             <div 
               className={`transition-all duration-700 ${
                 visibleStats >= 11 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">Abilities Dodged</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.dodged}</span>
+                <span className="text-lg font-medium text-black dark:text-white">Personality Trait</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.personality_trait}</span>
               </div>
             </div>
           </div>

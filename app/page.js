@@ -7,31 +7,64 @@ import MechanicSkills from './components/wrapped/MechanicSkills.js';
 import TeamPlayer from './components/wrapped/TeamPlayer.js'
 import RoleStats from './components/wrapped/RoleStats.js'
 import TimePreference from './components/wrapped/TimePreference.js'
+import ErrorScreen from './components/wrapped/ErrorScreen.js'
+
 
 export default function Home() {
-  const [currentPage, setCurrentPage] = useState('login');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [wrappedData, setWrappedData] = useState(null);
+  const [state, setState] = useState('input')
+  const [currScreen, setCurrScreen] = useState(0)
 
-  const navigateTo = (page) => {
-    window.scrollTo(0, 0);
-    setCurrentPage(page);
+  const fetchData = async (riotId, tagline) => {
+    setState('loading')
+    setErrorMessage('')
+    try {
+      const response = await fetch('/api/wrapped', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ gameName: riotId, tagLine: tagline }),
+      });
+
+      const result = await response.json();
+      console.log(result)
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setWrappedData(result.data);
+      setState('overall_stats');
+      setCurrScreen(0)
+    } catch (err) {
+      setErrorMessage(err.message)
+      setState('error')
+    }
   };
 
-  switch (currentPage) {
-    case 'login':
-      return <LoginScreen onNavigate={navigateTo} />;
-    case 'loading':
-      return <LoadingScreen onNavigate={navigateTo} />;
-    case 'overall_stats':
-      return <OverallStats onNavigate={navigateTo} />;
-    case 'mechanic':
-      return <MechanicSkills onNavigate={navigateTo} />;
-    case 'team_player':
-      return <TeamPlayer onNavigate={navigateTo} />;
-    case 'role':
-      return <RoleStats onNavigate={navigateTo} />;
-    case 'time_pref':
-      return <TimePreference onNavigate={navigateTo} />;
-    default:
-      return <LoginScreen onNavigate={navigateTo} />;
+  function handleReset() {
+    setErrorMessage('')
+    setCurrScreen(0)
+    setState('input')
   }
+
+  function onNavigate() {
+
+  }
+
+  if (state == 'input') return <LoginScreen fetchData={fetchData} />
+  if (state == 'loading') return <LoadingScreen />
+  if (state == 'error') return <ErrorScreen errorMessage={errorMessage} handleReset={handleReset} />
+  
+  let screens = [
+    <OverallStats onNavigate={onNavigate} data={wrappedData} />,
+    <MechanicSkills onNavigate={onNavigate} data={wrappedData} />,
+    <TeamPlayer onNavigate={onNavigate} data={wrappedData} />,
+    <RoleStats onNavigate={onNavigate} data={wrappedData} />,
+    <TimePreference onNavigate={onNavigate} data={wrappedData} />
+    // <SummaryScreen data={wrappedData}/>
+  ]
+
+  return screens[0]
 }

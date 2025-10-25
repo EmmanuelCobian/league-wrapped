@@ -7,7 +7,7 @@
 "use client"
 import { useState } from 'react';
 
-export default function TeamPlayer({ onNavigate }) {
+export default function TeamPlayer({ onNavigate, data }) {
   const [visibleStats, setVisibleStats] = useState(0);
   
   const stats = {

@@ -24,7 +24,7 @@ export async function POST(request) {
     const summoner = await getAccount(gameName, tagLine);
     
     // 2. Get match history
-    const matchIds = await getMatchHistory(summoner.puuid, 15);
+    const matchIds = await getMatchHistory(summoner.puuid, 5);
     
     // 3. Fetch all match details
     const matchPromises = matchIds.map(id => getMatchDetails(id));
