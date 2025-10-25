@@ -11,6 +11,7 @@ import { useState } from 'react';
 
 export default function OverallStats({ onNavigate, data}) {
   const overall_stats = data.overall
+  
   const [visibleStats, setVisibleStats] = useState(0)
 
     useState(() => {
@@ -134,7 +135,7 @@ export default function OverallStats({ onNavigate, data}) {
           >
             {/* Next Button */}
             <button
-              onClick={() => onNavigate('next')}
+              onClick={() => onNavigate('next', 'mechanical')}
               className="flex-center h-12 items-right justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a]"
             >
               Next →

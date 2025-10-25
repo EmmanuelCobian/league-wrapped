@@ -18,6 +18,7 @@ export default function Home() {
   const [currScreen, setCurrScreen] = useState(0)
 
   const fetchData = async (riotId, tagline) => {
+
     setState('loading')
     setErrorMessage('')
     try {
@@ -51,16 +52,13 @@ export default function Home() {
     else {
       setCurrScreen(currScreen+1) 
     }
+    setState(state)
   }
 
   function handleReset() {
     setErrorMessage('')
     setCurrScreen(0)
     setState('input')
-  }
-
-  function onNavigate() {
-
   }
 
   if (state == 'input') return <LoginScreen fetchData={fetchData} />
