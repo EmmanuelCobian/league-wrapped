@@ -9,7 +9,7 @@ import RoleStats from './components/wrapped/RoleStats.js'
 import TimePreference from './components/wrapped/TimePreference.js'
 
 export default function Home() {
-  const [currentPage, setCurrentPage] = useState('role');
+  const [currentPage, setCurrentPage] = useState('login');
 
   const navigateTo = (page) => {
     window.scrollTo(0, 0);

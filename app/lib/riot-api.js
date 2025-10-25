@@ -6,7 +6,7 @@ export async function getAccount(gameName, tagLine) {
     `${BASE_URL}/riot/account/v1/accounts/by-riot-id/${gameName}/${tagLine}`,
     {
       headers: {
-        "X-Riot-Token": "RGAPI-4c7869b2-58b4-4dfe-a815-5417f32cdc89",
+        "X-Riot-Token": RIOT_API_KEY,
       },
     }
   );
