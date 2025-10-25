@@ -623,24 +623,12 @@ function calculateConsistency(matches, playerPuuid) {
     kdas.reduce((sum, kda) => sum + Math.pow(kda - mean, 2), 0) / kdas.length;
   const stdDev = Math.sqrt(variance);
 
-  // Lower stdDev = more consistent = higher score
-  // Typical stdDev ranges for KDA:
-  // - Very inconsistent: stdDev > 2.5
-  // - Inconsistent: stdDev 2.0-2.5
-  // - Average: stdDev 1.5-2.0
-  // - Consistent: stdDev 1.0-1.5
-  // - Very consistent: stdDev < 1.0
-
-  // Map stdDev to score directly (inverse relationship)
-  // Low stdDev (0.5) -> High score (100)
-  // High stdDev (3.0) -> Low score (0)
-
-  if (stdDev <= 0.8) return 100; // Extremely consistent
-  if (stdDev <= 1.2) return 90; // Very consistent
-  if (stdDev <= 1.6) return 75; // Consistent
-  if (stdDev <= 2.0) return 60; // Above average
-  if (stdDev <= 2.5) return 45; // Average
-  if (stdDev <= 3.0) return 30; // Below average
-  if (stdDev <= 3.5) return 15; // Inconsistent
-  return 5; // Very inconsistent
+  if (stdDev <= 0.8) return 100;
+  if (stdDev <= 1.2) return 90;
+  if (stdDev <= 1.6) return 75;
+  if (stdDev <= 2.0) return 60;
+  if (stdDev <= 2.5) return 45;
+  if (stdDev <= 3.0) return 30;
+  if (stdDev <= 3.5) return 15;
+  return 5;
 }
