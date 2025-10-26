@@ -1,11 +1,6 @@
 const RIOT_API_KEY = process.env.RIOT_API_KEY;
 const BASE_URL = "https://americas.api.riotgames.com";
 
-// Validate API key on module load
-if (!RIOT_API_KEY) {
-  console.error("❌ RIOT_API_KEY is not set in environment variables!");
-}
-
 /**
  * Helper function to fetch with timeout and better error handling
  */
@@ -49,14 +44,8 @@ export async function getAccount(gameName, tagLine) {
     gameName
   )}/${encodeURIComponent(tagLine)}`;
 
-  console.log(`🔍 Fetching account: ${gameName}#${tagLine}`);
-  console.log(`📍 URL: ${url}`);
-  console.log(
-    `🔑 API Key exists: ${!!RIOT_API_KEY}, prefix: ${RIOT_API_KEY?.substring(
-      0,
-      10
-    )}...`
-  );
+  console.log(`Fetching account: ${gameName}#${tagLine}`);
+  console.log(`URL: ${url}`);
 
   const response = await fetchWithTimeout(url, {
     headers: {
@@ -66,7 +55,7 @@ export async function getAccount(gameName, tagLine) {
 
   if (!response.ok) {
     const errorText = await response.text().catch(() => "No error body");
-    console.error(`❌ getAccount failed: ${response.status} - ${errorText}`);
+    console.error(`getAccount failed: ${response.status} - ${errorText}`);
 
     if (response.status === 404) {
       throw new Error("404: Summoner not found. Check spelling and tag line.");
@@ -84,7 +73,7 @@ export async function getAccount(gameName, tagLine) {
   }
 
   const data = await response.json();
-  console.log(`✅ Account found: ${data.puuid}`);
+  console.log(`Account found: ${data.puuid}`);
   return data;
 }
 
@@ -113,13 +102,27 @@ export async function getMatchHistory(puuid, count = 20) {
   });
 
   if (!response.ok) {
-    console.error(`❌ getMatchHistory failed: ${response.status}`);
+    console.error(`getMatchHistory failed: ${response.status}`);
     throw new Error(`getMatchHistory Riot API error: ${response.status}`);
   }
 
   const matchIds = await response.json();
-  console.log(`✅ Found ${matchIds.length} matches`);
+  console.log(`Found ${matchIds.length} matches`);
   return matchIds;
+}
+
+/**
+ * Finds and returns the last used player icon from the list of the player's last games
+ * 
+ * @param {string} puuid - unique uuid of a player
+ * @param {Object} match - latest match data
+ * @returns int for the profile icon number from the player's most recent game
+ */
+export async function getProfileIcon(puuid, match) {
+  const player = match.info.participants.find((p) => p.puuid === puuid);
+  if (!player) return 0;
+
+  return player.profileIcon
 }
 
 /**
@@ -147,7 +150,7 @@ export async function getMatchDetails(matchId) {
 
   if (!response.ok) {
     console.error(
-      `❌ getMatchDetails failed for ${matchId}: ${response.status}`
+      `getMatchDetails failed for ${matchId}: ${response.status}`
     );
     throw new Error(`getMatchDetails Riot API error: ${response.status}`);
   }

@@ -602,22 +602,180 @@ function calculateTeamwork(matches, playerPuuid) {
 }
 
 /**
- * Calculates a player's consistency score
+ * Calculates a player's consistency score across all game modes
+ * Weighted combination of laning games and non-laning games
  *
  * @param {Array[Object]} matches - list of matches
  * @param {string} playerPuuid - the unique puuid for a player
- * @returns float score representing consistency
+ * @returns float score representing consistency [0-100]
  */
 function calculateConsistency(matches, playerPuuid) {
-  const kdas = matches.map((match) => {
+  let laningGames = [];
+  let nonLaningGames = [];
+
+  matches.forEach((match) => {
     const player = match.info.participants.find((p) => p.puuid === playerPuuid);
-    if (!player) return 0;
-    return (
-      player.challenges?.kda ||
-      (player.kills + player.assists) / Math.max(1, player.deaths)
-    );
+    if (!player) return;
+
+    if (isTraditionalLaningMode(match)) {
+      laningGames.push({ match, player });
+    } else {
+      nonLaningGames.push({ match, player });
+    }
   });
 
+  if (matches.length === 0) return 50;
+  if (laningGames.length === 0) {
+    const kdas = nonLaningGames.map(
+      (g) =>
+        g.player.challenges?.kda ||
+        (g.player.kills + g.player.assists) / Math.max(1, g.player.deaths)
+    );
+    return getStdScoreFromKDAs(kdas);
+  }
+  if (nonLaningGames.length === 0) {
+    return getLaneConsistencyScore(laningGames);
+  }
+
+  const laningScore = getLaneConsistencyScore(laningGames);
+  const nonLaningKDAs = nonLaningGames.map(
+    (g) =>
+      g.player.challenges?.kda ||
+      (g.player.kills + g.player.assists) / Math.max(1, g.player.deaths)
+  );
+  const nonLaningScore = getStdScoreFromKDAs(nonLaningKDAs);
+
+  const laningWeight = laningGames.length / matches.length;
+  const nonLaningWeight = nonLaningGames.length / matches.length;
+  return laningScore * laningWeight + nonLaningScore * nonLaningWeight;
+}
+
+/**
+ * Calculates consistency score for laning games based on role
+ *
+ * @param {Array[Object]} games - array of {match, player} objects
+ * @returns float score [0-100]
+ */
+function getLaneConsistencyScore(games) {
+  const performanceScores = games.map(({ match, player }) => {
+    const role = player.teamPosition;
+    return calculateRolePerformanceScore(player, role, match);
+  });
+
+  const mean =
+    performanceScores.reduce((a, b) => a + b, 0) / performanceScores.length;
+  const variance =
+    performanceScores.reduce(
+      (sum, score) => sum + Math.pow(score - mean, 2),
+      0
+    ) / performanceScores.length;
+  const stdDev = Math.sqrt(variance);
+
+  if (stdDev <= 12) return 100;
+  if (stdDev <= 18) return 90;
+  if (stdDev <= 24) return 75;
+  if (stdDev <= 30) return 60;
+  if (stdDev <= 36) return 45;
+  if (stdDev <= 42) return 30;
+  if (stdDev <= 48) return 15;
+  return 5;
+}
+
+/**
+ * Calculates role-specific performance score for a single game
+ * Different stats are weighted differently per role
+ *
+ * @param {Object} player - player data from match
+ * @param {string} role - player's role (TOP, JUNGLE, MIDDLE, BOTTOM, UTILITY)
+ * @param {Object} match - full match data
+ * @returns float score [0-100] representing performance in that game
+ */
+function calculateRolePerformanceScore(player, role, match) {
+  const ch = player.challenges || {};
+  let score = 0;
+
+  const kda =
+    ch.kda || (player.kills + player.assists) / Math.max(1, player.deaths);
+  const kdaScore = Math.min(100, (kda / 5) * 100); // 5.0 KDA = 100 points
+
+  if (role === "TOP") {
+    // Top: KDA (45%), Towers (35%), CS (20%)
+    score += kdaScore * 0.45;
+    
+    const towerScore = Math.min(100, (player.turretTakedowns / 4) * 100);
+    score += towerScore * 0.35;
+
+    const csPerMin =
+    (player.totalMinionsKilled + player.neutralMinionsKilled) /
+    (player.timePlayed / 60);
+    const csScore = Math.min(100, (csPerMin / 8) * 100);
+    score += csScore * 0.20;
+  } else if (role === "JUNGLE") {
+    // Jungle: KDA (40%), Objectives (40%), CS (20%)
+    score += kdaScore * 0.4;
+
+    const objectives =
+      (ch.dragonTakedowns || 0) +
+      (ch.baronTakedowns || 0) * 2 +
+      (ch.riftHeraldTakedowns || 0);
+    const objectiveScore = Math.min(100, (objectives / 5) * 100);
+    score += objectiveScore * 0.4;
+
+    const csPerMin =
+      (player.totalMinionsKilled + player.neutralMinionsKilled) /
+      (player.timePlayed / 60);
+    const csScore = Math.min(100, (csPerMin / 6) * 100);
+    score += csScore * 0.2;
+  } else if (role === "MIDDLE") {
+    // Mid: KDA (40%), Objectives (30%), CS (30%)
+    score += kdaScore * 0.4;
+
+    const objectives = (ch.dragonTakedowns || 0) + (ch.baronTakedowns || 0) * 2;
+    const objectiveScore = Math.min(100, (objectives / 4) * 100);
+    score += objectiveScore * 0.3;
+
+    const csPerMin =
+      (player.totalMinionsKilled + player.neutralMinionsKilled) /
+      (player.timePlayed / 60);
+    const csScore = Math.min(100, (csPerMin / 8) * 100);
+    score += csScore * 0.3;
+  } else if (role === "BOTTOM") {
+    // ADC: KDA (40%), CS (40%), Towers (20%)
+    score += kdaScore * 0.4;
+
+    const csPerMin =
+      (player.totalMinionsKilled + player.neutralMinionsKilled) /
+      (player.timePlayed / 60);
+    const csScore = Math.min(100, (csPerMin / 8) * 100);
+    score += csScore * 0.4;
+
+    const towerScore = Math.min(100, (player.turretTakedowns / 4) * 100);
+    score += towerScore * 0.2;
+  } else if (role === "UTILITY") {
+    // Support: KDA (30%), Objectives (30%), Vision (40%)
+    score += kdaScore * 0.3;
+
+    const objectives = (ch.dragonTakedowns || 0) + (ch.baronTakedowns || 0) * 2;
+    const objectiveScore = Math.min(100, (objectives / 4) * 100);
+    score += objectiveScore * 0.3;
+
+    const visionPerMin = (player.visionScore || 0) / (player.timePlayed / 60);
+    const visionScore = Math.min(100, (visionPerMin / 2) * 100);
+    score += visionScore * 0.4;
+  } else {
+    return kdaScore;
+  }
+
+  return score;
+}
+
+/**
+ * Generates a score from just KDAs
+ *
+ * @param {Array[float]} kdas - list of kdas for fetched matches
+ * @returns score from [0, 100] representing pure KDA score
+ */
+function getStdScoreFromKDAs(kdas) {
   const mean = kdas.reduce((a, b) => a + b, 0) / kdas.length;
   const variance =
     kdas.reduce((sum, kda) => sum + Math.pow(kda - mean, 2), 0) / kdas.length;
