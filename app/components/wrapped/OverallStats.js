@@ -119,7 +119,7 @@ export default function OverallStats({ onNavigate, data}) {
                       >
                         {/* Background Image */}
                         <img 
-                          src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ[0].replace(" ", "")}_0.jpg`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.name.replace(" ", "")}_0.jpg`}
                           alt={champ[0]}
                           className="absolute inset-0 w-full h-full object-cover"
                         />
@@ -127,7 +127,7 @@ export default function OverallStats({ onNavigate, data}) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         {/* Champion name */}
                         <span className="relative z-10 text-white text-base font-bold text-center leading-tight">
-                          {champ[0]}
+                          {champ.name}
                         </span>
                       </div>
                     ))}
