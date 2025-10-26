@@ -119,15 +119,15 @@ export default function OverallStats({ onNavigate, data}) {
                       >
                         {/* Background Image */}
                         <img 
-                          src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ[0].replace(" ", "")}_0.jpg`}
-                          alt={champ[0]}
+                          src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.name.replace(" ", "")}_0.jpg`}
+                          alt={champ.name}
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                         {/* Dark overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                         {/* Champion name */}
                         <span className="relative z-10 text-white text-base font-bold text-center leading-tight">
-                          {champ[0]}
+                          {champ.name}
                         </span>
                       </div>
                     ))}
@@ -142,52 +142,43 @@ export default function OverallStats({ onNavigate, data}) {
                     >
                       {/* Background Image */}
                       <img 
-<<<<<<< HEAD
-                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${overall_stats.topChamps[selectedChamp][0].replace(" ", "")}_0.jpg`}
-                        alt={overall_stats.topChamps[selectedChamp][0]}
-=======
-                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.name.replace(" ", "")}_0.jpg`}
-                        alt={champ.name}
->>>>>>> fa4d15132e00b3223488d408583815aabb3ded27
+                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${overall_stats.topChamps[selectedChamp].name.replace(" ", "")}_0.jpg`}
+                        alt={overall_stats.topChamps[selectedChamp].name}
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                       {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                       {/* Champion name */}
                       <span className="relative z-10 text-white text-base font-bold text-center leading-tight">
-<<<<<<< HEAD
-                        {overall_stats.topChamps[selectedChamp][0]}
-=======
-                        {champ.name}
->>>>>>> fa4d15132e00b3223488d408583815aabb3ded27
+                        {overall_stats.topChamps[selectedChamp].name}
                       </span>
                     </div>
                     
                     {/* Stats Text Box */}
                     <div className="flex-1 flex flex-col justify-center p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 min-w-0">
                       <h3 className="text-xl font-bold text-black dark:text-white mb-4">
-                        {overall_stats.topChamps[selectedChamp][0]} Stats
+                        {overall_stats.topChamps[selectedChamp].name} Stats
                       </h3>
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="text-base text-zinc-600 dark:text-zinc-400">Games Played</span>
-                          <span className="text-lg font-semibold text-black dark:text-white">--</span>
+                          <span className="text-lg font-semibold text-black dark:text-white">{overall_stats.topChamps[selectedChamp].games}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-base text-zinc-600 dark:text-zinc-400">Total Time Played</span>
-                          <span className="text-lg font-semibold text-black dark:text-white">--</span>
+                          <span className="text-lg font-semibold text-black dark:text-white">{overall_stats.topChamps[selectedChamp].totalTimePlayed} mins</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-base text-zinc-600 dark:text-zinc-400">KDA</span>
-                          <span className="text-lg font-semibold text-black dark:text-white">--</span>
+                          <span className="text-base text-zinc-600 dark:text-zinc-400">Average KDA</span>
+                          <span className="text-lg font-semibold text-black dark:text-white">{overall_stats.topChamps[selectedChamp].avgKDA}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-base text-zinc-600 dark:text-zinc-400">Win Rate</span>
-                          <span className="text-lg font-semibold text-black dark:text-white">--</span>
+                          <span className="text-lg font-semibold text-black dark:text-white">{overall_stats.topChamps[selectedChamp].winrate}%</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-base text-zinc-600 dark:text-zinc-400">CS</span>
-                          <span className="text-lg font-semibold text-black dark:text-white">--</span>
+                          <span className="text-base text-zinc-600 dark:text-zinc-400">CS/min</span>
+                          <span className="text-lg font-semibold text-black dark:text-white">{overall_stats.topChamps[selectedChamp].avgCSPerMin}</span>
                         </div>
                       </div>
                     </div>
