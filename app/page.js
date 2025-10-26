@@ -4,12 +4,10 @@ import LoginScreen from "./components/wrapped/LoginScreen.js";
 import LoadingScreen from "./components/wrapped/LoadingScreen.js";
 import OverallStats from "./components/wrapped/OverallStats.js";
 import MechanicSkills from './components/wrapped/MechanicSkills.js';
-import TeamPlayer from './components/wrapped/TeamPlayer.js'
 import RoleStats from './components/wrapped/RoleStats.js'
 import TimePreference from './components/wrapped/TimePreference.js'
 import ErrorScreen from './components/wrapped/ErrorScreen.js'
 import SummaryScreen from './components/wrapped/SummaryScreen.js';
-
 
 export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
