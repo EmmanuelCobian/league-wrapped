@@ -49,11 +49,26 @@ export default function TimePreference({ onNavigate, data }) {
     };
   }, []);
 
+  function reaction() {
+    if (stats.playsAllDay && stats.winrate < 50) {
+      return "Maybe touch some grass?"
+    }
+    else if (stats.playsAllDay && stats.winrate > 75) {
+      return "What a beast. At least you're winning."
+    }
+    else if (stats.winrate > 55) {
+      return "Positive winrate. Looking pretty good."
+    }
+    else {
+      return "Hopefully your friends think you're playing for fun."
+    }
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
       <main className="flex min-h-screen w-full max-w-7xl flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black">
         <div className="text-4xl font-bold text-black dark:text-white">
-          Time break down
+          Gaming Tendencies
         </div>
 
         <div className="flex flex-col items-center gap-8 text-center w-full">
@@ -96,8 +111,9 @@ export default function TimePreference({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Winrate at that time?</span>
-                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.winrate}</span>
+                <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.winrate}%</span>
               </div>
+              <h1> <span className="text-m font-serif"> {reaction()} </span></h1>
             </div>
           </div>
         </div>

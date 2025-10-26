@@ -45,6 +45,13 @@ export default function MechanicSkills({ onNavigate, data }) {
                 How skilled are you?
             </h1>
 
+            <h1 className={`text-l font-semibold text-black dark:text-white mb-8 transition-all duration-700 ${
+                visibleStats >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+            }`}>
+                Over the past {data.overall.wins + data.overall.losses} games, we averaged each score.
+            </h1>
+            
+
           <div className="w-full max-w-5xl space-y-6">
             {/* Objective Participation */}
             <div 

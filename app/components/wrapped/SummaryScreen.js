@@ -178,7 +178,7 @@ export default function SummaryScreen({ onNavigate, data }) {
                   Time Wasted (LOL)
                 </span>
                 <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-                  {stats.minutesPlayed}
+                  {stats.minutesPlayed} mins
                 </span>
               </div>
             </div>
