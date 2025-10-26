@@ -1,5 +1,6 @@
 "use client"
 import { useState } from 'react';
+import Navbar from "./components/wrapped/Navbar";
 import LoginScreen from "./components/wrapped/LoginScreen.js";
 import LoadingScreen from "./components/wrapped/LoadingScreen.js";
 import OverallStats from "./components/wrapped/OverallStats.js";
@@ -16,7 +17,6 @@ export default function Home() {
   const [currScreen, setCurrScreen] = useState(0)
 
   const fetchData = async (riotId, tagline) => {
-
     setState('loading')
     setErrorMessage('')
     try {
@@ -27,13 +27,11 @@ export default function Home() {
         },
         body: JSON.stringify({ gameName: riotId, tagLine: tagline }),
       });
-
       const result = await response.json();
       console.log(result)
       if (!result.success) {
         throw new Error(result.error);
       }
-
       setWrappedData(result.data);
       setState('overall_stats');
       setCurrScreen(0)
@@ -45,7 +43,7 @@ export default function Home() {
 
   function onNavigate(direction) {
     if (direction == 'prev') setCurrScreen(currScreen-1)
-    else if (direction == 'next') setCurrScreen(currScreen+1) 
+    else if (direction == 'next') setCurrScreen(currScreen+1)
     else if (direction == 'input') handleReset()
     window.scrollTo(0, 0);
   }
@@ -56,18 +54,23 @@ export default function Home() {
     setState('input')
   }
 
-  if (state == 'input') return <LoginScreen fetchData={fetchData} />
-  if (state == 'loading') return <LoadingScreen />
-  if (state == 'error') return <ErrorScreen errorMessage={errorMessage} handleReset={handleReset} />
-
   let screens = [
     <OverallStats onNavigate={onNavigate} data={wrappedData} />,
     <MechanicSkills onNavigate={onNavigate} data={wrappedData} />,
-    // <TeamPlayer onNavigate={onNavigate} data={wrappedData} />,
     <RoleStats onNavigate={onNavigate} data={wrappedData} />,
     <TimePreference onNavigate={onNavigate} data={wrappedData} />,
     <SummaryScreen onNavigate={onNavigate} data={wrappedData}/>
   ]
 
-  return screens[currScreen]
+  return (
+    <>
+      <Navbar handleReset={handleReset}/>
+      <div className="pt-16">
+        {state == 'input' && <LoginScreen fetchData={fetchData} />}
+        {state == 'loading' && <LoadingScreen />}
+        {state == 'error' && <ErrorScreen errorMessage={errorMessage} handleReset={handleReset} />}
+        {state !== 'input' && state !== 'loading' && state !== 'error' && screens[currScreen]}
+      </div>
+    </>
+  )
 }
