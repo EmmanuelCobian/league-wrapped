@@ -120,7 +120,11 @@ export default function OverallStats({ onNavigate, data}) {
                         {/* Background Image */}
                         <img 
                           src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.name.replace(" ", "")}_0.jpg`}
+<<<<<<< HEAD
                           alt={champ.name}
+=======
+                          alt={champ[0]}
+>>>>>>> origin
                           className="absolute inset-0 w-full h-full object-cover"
                         />
                         {/* Dark overlay */}
@@ -142,15 +146,24 @@ export default function OverallStats({ onNavigate, data}) {
                     >
                       {/* Background Image */}
                       <img 
+<<<<<<< HEAD
                         src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${overall_stats.topChamps[selectedChamp].name.replace(" ", "")}_0.jpg`}
                         alt={overall_stats.topChamps[selectedChamp].name}
+=======
+                        src={`https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champ.name.replace(" ", "")}_0.jpg`}
+                        alt={champ.name}
+>>>>>>> origin
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                       {/* Dark overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                       {/* Champion name */}
                       <span className="relative z-10 text-white text-base font-bold text-center leading-tight">
+<<<<<<< HEAD
                         {overall_stats.topChamps[selectedChamp].name}
+=======
+                        {champ.name}
+>>>>>>> origin
                       </span>
                     </div>
                     
