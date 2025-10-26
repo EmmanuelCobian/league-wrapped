@@ -15,7 +15,7 @@ export function generateWrappedData(matches, playerPuuid) {
   const roleStats = calculateRoleStats(
     matches,
     playerPuuid,
-    topChamps[0][0] || ""
+    topChamps[0].name || ""
   );
   const summary = calculateSummary(matches, playerPuuid, topChamps);
 
@@ -141,8 +141,9 @@ function calculateTimePreference(matches, playerPuuid) {
 function calculateOverallStats(matches, playerPuuid) {
   let wins = 0;
   let losses = 0;
-  let assists = 0;
-  let kills = 0;
+  let totalAssists = 0;
+  let totalKills = 0;
+  let totalDeaths = 0;
   let champsPlayed = {};
 
   matches.forEach((match) => {
@@ -151,25 +152,76 @@ function calculateOverallStats(matches, playerPuuid) {
 
     if (player.win) wins += 1;
     else losses += 1;
+    
+    totalAssists += player.assists;
+    totalKills += player.kills;
+    totalDeaths += player.deaths;
 
-    assists += player.assists;
-    kills += player.kills;
-
-    if (!champsPlayed[player.championName]) {
-      champsPlayed[player.championName] = 0;
+    const champName = player.championName;
+    if (!champsPlayed[champName]) {
+      champsPlayed[champName] = {
+        games: 0,
+        totalTimePlayed: 0,
+        totalKDA: 0,
+        wins: 0,
+        losses: 0,
+        totalCS: 0,
+      };
     }
-    champsPlayed[player.championName] += 1;
+
+    const champStats = champsPlayed[champName];
+    champStats.games += 1;
+
+    const gameMinutes = (player.timePlayed || match.info.gameDuration) / 60;
+    champStats.totalTimePlayed += gameMinutes;
+
+    const gameKDA = player.challenges?.kda || 
+                    ((player.kills + player.assists) / Math.max(1, player.deaths));
+    champStats.totalKDA += gameKDA;
+
+    if (player.win) champStats.wins += 1;
+    else champStats.losses += 1;
+
+    champStats.totalCS += (player.totalMinionsKilled || 0) + (player.neutralMinionsKilled || 0);
   });
 
-  const topChamps = Object.entries(champsPlayed)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, Math.min(3, matches.length));
+  const champStatsWithDerived = Object.entries(champsPlayed).map(([name, stats]) => {
+    const avgKDA = stats.totalKDA / stats.games;
+
+    const avgCSPerMin = stats.totalTimePlayed > 0
+      ? stats.totalCS / stats.totalTimePlayed
+      : 0;
+
+    const winrate = (stats.wins / stats.games) * 100;
+
+    return {
+      name,
+      games: stats.games,
+      totalTimePlayed: Math.round(stats.totalTimePlayed),
+      avgKDA: roundToDecimal(avgKDA, 2),
+      wins: stats.wins,
+      losses: stats.losses,
+      winrate: roundToDecimal(winrate, 1),
+      avgCSPerMin: roundToDecimal(avgCSPerMin, 1),
+      totalCS: stats.totalCS,
+    };
+  });
+
+  const topChamps = champStatsWithDerived
+    .sort((a, b) => b.games - a.games)
+    .slice(0, Math.min(3, champStatsWithDerived.length));
+
+  const overallKDA = totalDeaths > 0
+    ? (totalKills + totalAssists) / totalDeaths
+    : totalKills + totalAssists;
 
   return {
     wins,
     losses,
-    assists,
-    kills,
+    assists: totalAssists,
+    kills: totalKills,
+    winrate: roundToDecimal((wins / matches.length) * 100, 1),
+    overallKDA: roundToDecimal(overallKDA, 2),
     topChamps,
   };
 }
@@ -506,7 +558,7 @@ function calculateSummary(matches, playerPuuid, topChamps) {
   const bestRoleDisplay = roleNames[bestRole] || bestRole;
 
   return {
-    topChamp: topChamps[0]?.[0] || "N/A",
+    topChamp: topChamps[0]?.name || "N/A",
     topChamps,
     minutesPlayed: Math.floor(minutesPlayed),
     bestRole: bestRoleDisplay,
