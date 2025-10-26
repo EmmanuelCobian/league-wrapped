@@ -97,7 +97,7 @@ export default function MechanicSkills({ onNavigate, data }) {
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
                 <span className="text-lg font-medium text-black dark:text-white">Skill Shot Accuracy</span>
-                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.avgSkillshotsHit}</span>
+                <span className="text-2xl font-bold text-purple-600 dark:text-purple-400">{stats.avgSkillshotsHit}%</span>
               </div>
             </div>
 

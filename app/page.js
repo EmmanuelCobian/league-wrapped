@@ -13,8 +13,35 @@ import SummaryScreen from './components/wrapped/SummaryScreen.js';
 export default function Home() {
   const [errorMessage, setErrorMessage] = useState('');
   const [wrappedData, setWrappedData] = useState(null);
-  const [state, setState] = useState('input')
-  const [currScreen, setCurrScreen] = useState(0)
+  const [claudeData, setClaudeData] = useState(null);
+  const [state, setState] = useState('input');
+  const [currScreen, setCurrScreen] = useState(0);
+
+  const fetchClaudeData = async (data) => {
+    try {
+      const response = await fetch('/api/claude', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          stats: data.roleStats
+        }),
+      });
+
+      const result = await response.json();
+      console.log(result);
+
+      if (!result.success) {
+        throw new Error(result.error);
+      }
+
+      setClaudeData(result);
+    } catch (err) {
+      setErrorMessage(err.message);
+      setState('error');
+    }
+  };
 
   const fetchData = async (riotId, tagline) => {
     setState('loading')
@@ -33,6 +60,7 @@ export default function Home() {
         throw new Error(result.error);
       }
       setWrappedData(result.data);
+      fetchClaudeData(result.data);
       setState('overall_stats');
       setCurrScreen(0)
     } catch (err) {
@@ -42,8 +70,8 @@ export default function Home() {
   };
 
   function onNavigate(direction) {
-    if (direction == 'prev') setCurrScreen(currScreen-1)
-    else if (direction == 'next') setCurrScreen(currScreen+1)
+    if (direction == 'prev') setCurrScreen(currScreen - 1)
+    else if (direction == 'next') setCurrScreen(currScreen + 1)
     else if (direction == 'input') handleReset()
     window.scrollTo(0, 0);
   }
@@ -57,14 +85,14 @@ export default function Home() {
   let screens = [
     <OverallStats onNavigate={onNavigate} data={wrappedData} />,
     <MechanicSkills onNavigate={onNavigate} data={wrappedData} />,
-    <RoleStats onNavigate={onNavigate} data={wrappedData} />,
+    <RoleStats onNavigate={onNavigate} data={wrappedData} claudeData={claudeData} />,
     <TimePreference onNavigate={onNavigate} data={wrappedData} />,
-    <SummaryScreen onNavigate={onNavigate} data={wrappedData}/>
+    <SummaryScreen onNavigate={onNavigate} data={wrappedData} />
   ]
 
   return (
     <>
-      <Navbar handleReset={handleReset}/>
+      <Navbar handleReset={handleReset} />
       <div className="pt-16">
         {state == 'input' && <LoginScreen fetchData={fetchData} />}
         {state == 'loading' && <LoadingScreen />}
