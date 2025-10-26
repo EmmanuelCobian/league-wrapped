@@ -216,15 +216,15 @@ export default function SummaryScreen({ onNavigate, data }) {
                 <div className="flex justify-around gap-4">
                   {stats.topChamps &&
                     stats.topChamps.map((champ, index) => (
-                      <div key={champ[0]} className="text-center">
+                      <div key={index} className="text-center">
                         <div className="text-2xl mb-2">
                           {index === 0 ? "🥇" : index === 1 ? "🥈" : "🥉"}
                         </div>
                         <p className="font-bold text-black dark:text-white">
-                          {champ[0]}
+                          {champ.name}
                         </p>
                         <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                          {champ[1]} games
+                          {champ.games} games
                         </p>
                       </div>
                     ))}
