@@ -46,12 +46,10 @@ export default function Home() {
   };
 
   function onNavigate(direction) {
-    if (direction == 'prev') {
-      setCurrScreen(currScreen-1)
-    } 
-    else {
-      setCurrScreen(currScreen+1) 
-    }
+    if (direction == 'prev') setCurrScreen(currScreen-1)
+    else if (direction == 'next') setCurrScreen(currScreen+1) 
+    else if (direction == 'input') handleReset()
+    window.scrollTo(0, 0);
   }
 
   function handleReset() {

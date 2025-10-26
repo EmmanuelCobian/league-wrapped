@@ -51,7 +51,7 @@ export default function TimePreference({ onNavigate, data }) {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-7xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black">
+      <main className="flex min-h-screen w-full max-w-7xl flex-col items-center justify-start py-32 px-16 bg-white dark:bg-black">
         <div className="text-4xl font-bold text-black dark:text-white">
           Time break down
         </div>
@@ -60,7 +60,7 @@ export default function TimePreference({ onNavigate, data }) {
             <h1 className={`text-3xl font-semibold text-black dark:text-white mb-8 transition-all duration-700 ${
                 visibleStats >= 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
             }`}>
-                Hi
+                At what time of day do you perform the best?
             </h1>
 
           <div className="w-full max-w-5xl space-y-6">
@@ -95,7 +95,7 @@ export default function TimePreference({ onNavigate, data }) {
               }`}
             >
               <div className="flex items-center justify-between p-6 rounded-lg bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
-                <span className="text-lg font-medium text-black dark:text-white">CS Score</span>
+                <span className="text-lg font-medium text-black dark:text-white">Winrate at that time?</span>
                 <span className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.winrate}</span>
               </div>
             </div>
@@ -103,10 +103,10 @@ export default function TimePreference({ onNavigate, data }) {
         </div>
         
         <div
-            className={`flex justify-between w-full transition-all duration-700 ${
-              visibleStats >= 11
-                ? 'opacity-100 translate-y-0'
-                : 'opacity-0 translate-y-4'
+            className={`flex justify-between w-full mb-16 transition-all duration-700 ${
+            visibleStats >= 11
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-4'
             }`}
           >
             {/* Previous Button */}
